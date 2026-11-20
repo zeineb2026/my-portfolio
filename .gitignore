@@ -1,0 +1,8 @@
+# Browser-automation screenshots and logs (may contain personal data)
+.playwright-mcp/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
