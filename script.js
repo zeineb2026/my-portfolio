@@ -40,6 +40,26 @@
       'skills.s5': 'Personalised skincare and hygiene advice',
       'skills.s6Name': 'Prevention & health education',
       'skills.s6': 'Patient follow-up, prevention and wellbeing',
+      'nav.projects': 'Projects',
+      'projects.eyebrow': 'Selected work',
+      'projects.title': 'Projects',
+      'projects.intro': 'A few initiatives I’m proud of, at the pharmacy and beyond.',
+      'projects.p1Kicker': 'Prevention',
+      'projects.p1Title': 'Diabetes screening days',
+      'projects.p1Desc': 'Free blood-glucose checks at the pharmacy, with personalised advice on diet, physical activity and when to see a doctor.',
+      'projects.p1t1': 'Screening',
+      'projects.p1t2': 'Health education',
+      'projects.p1t3': 'Patient advice',
+      'projects.p2Kicker': 'Patient care',
+      'projects.p2Title': 'Chronic patient follow-up',
+      'projects.p2Desc': 'Follow-up sheets and regular check-ins for long-term treatments (hypertension, asthma) to improve adherence and catch side effects early.',
+      'projects.p2t1': 'Adherence',
+      'projects.p2t2': 'Pharmacovigilance',
+      'projects.p2t3': 'Follow-up',
+      'projects.p3Kicker': 'Web',
+      'projects.p3Title': 'This portfolio',
+      'projects.p3Desc': 'A bilingual, responsive one-page site built from scratch in HTML, CSS and JavaScript — no frameworks, with dark mode.',
+      'projects.p3Link': 'View the code',
       'contact.eyebrow': "Let's talk",
       'contact.title': 'Contact',
       'contact.intro': 'A question about a treatment or a request? Send me a message.',
@@ -59,6 +79,8 @@
       'aria.menuOpen': 'Open menu',
       'aria.menuClose': 'Close menu',
       'aria.lang': 'Passer en français',
+      'aria.themeDark': 'Switch to dark mode',
+      'aria.themeLight': 'Switch to light mode',
       'meta.title': 'Zeineb Belaid Belli — Doctor of Pharmacy',
     },
     fr: {
@@ -92,6 +114,26 @@
       'skills.s5': 'Conseils personnalisés en soin de la peau et hygiène',
       'skills.s6Name': 'Prévention & éducation santé',
       'skills.s6': 'Suivi des patients, prévention et bien-être',
+      'nav.projects': 'Projets',
+      'projects.eyebrow': 'Réalisations',
+      'projects.title': 'Projets',
+      'projects.intro': 'Quelques initiatives dont je suis fière, à l’officine et au-delà.',
+      'projects.p1Kicker': 'Prévention',
+      'projects.p1Title': 'Journées de dépistage du diabète',
+      'projects.p1Desc': 'Contrôles de glycémie gratuits à l’officine, avec des conseils personnalisés sur l’alimentation, l’activité physique et le moment de consulter.',
+      'projects.p1t1': 'Dépistage',
+      'projects.p1t2': 'Éducation santé',
+      'projects.p1t3': 'Conseil patient',
+      'projects.p2Kicker': 'Suivi patient',
+      'projects.p2Title': 'Suivi des patients chroniques',
+      'projects.p2Desc': 'Fiches de suivi et entretiens réguliers pour les traitements au long cours (hypertension, asthme) afin d’améliorer l’observance et repérer tôt les effets indésirables.',
+      'projects.p2t1': 'Observance',
+      'projects.p2t2': 'Pharmacovigilance',
+      'projects.p2t3': 'Suivi',
+      'projects.p3Kicker': 'Web',
+      'projects.p3Title': 'Ce portfolio',
+      'projects.p3Desc': 'Un site bilingue et responsive créé de zéro en HTML, CSS et JavaScript — sans framework, avec mode sombre.',
+      'projects.p3Link': 'Voir le code',
       'contact.eyebrow': 'Parlons-en',
       'contact.title': 'Contact',
       'contact.intro': 'Une question sur un traitement ou une demande ? Envoyez-moi un message.',
@@ -111,6 +153,8 @@
       'aria.menuOpen': 'Ouvrir le menu',
       'aria.menuClose': 'Fermer le menu',
       'aria.lang': 'Switch to English',
+      'aria.themeDark': 'Passer en mode sombre',
+      'aria.themeLight': 'Passer en mode clair',
       'meta.title': 'Zeineb Belaid Belli — Docteur en pharmacie',
     },
   };
@@ -136,11 +180,41 @@
     document.title = t('meta.title');
     langToggle.setAttribute('aria-label', t('aria.lang'));
     updateMenuLabel();
+    updateThemeLabel();
     revalidateVisibleErrors();
     storage.set('lang', lang);
   }
 
   langToggle.addEventListener('click', () => applyLang(lang === 'en' ? 'fr' : 'en'));
+
+  /* =========================================================
+     Theme (light / dark), saved in localStorage.
+     The inline script in <head> applies the saved choice before first paint.
+     ========================================================= */
+  const themeToggle = document.getElementById('themeToggle');
+  const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') || (darkQuery.matches ? 'dark' : 'light');
+  }
+
+  function updateThemeLabel() {
+    themeToggle.setAttribute('aria-label', t(currentTheme() === 'dark' ? 'aria.themeLight' : 'aria.themeDark'));
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const next = currentTheme() === 'dark' ? 'light' : 'dark';
+    if (!reduceMotion) {
+      root.classList.add('theme-anim');
+      setTimeout(() => root.classList.remove('theme-anim'), 500);
+    }
+    root.setAttribute('data-theme', next);
+    storage.set('theme', next);
+    updateThemeLabel();
+  });
+
+  // Keep the label right if the system theme changes and no choice was saved
+  darkQuery.addEventListener('change', updateThemeLabel);
 
   /* =========================================================
      Navigation
@@ -210,6 +284,9 @@
     if (el.classList.contains('is-visible')) return;
     el.classList.add('is-visible');
     el.querySelectorAll('[data-count]').forEach(animateCount);
+    // Once the staggered entrance is done, drop the delay so hover feels instant
+    const i = Number(el.style.getPropertyValue('--i')) || 0;
+    setTimeout(() => el.classList.add('revealed'), i * 100 + 900);
     revealObserver.unobserve(el); // once
   }
 

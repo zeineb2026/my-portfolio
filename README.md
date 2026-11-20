@@ -17,7 +17,8 @@ Portfolio of Zeineb Belaid Belli, Doctor of Pharmacy (day community pharmacy, Mo
 - Contact form with inline validation (shake on error), loading spinner and animated success state
 - Responsive layout with an animated mobile menu
 - Blurred sticky navigation that highlights the section in view
-- Automatic dark mode (follows the system setting)
+- Projects section with three animated project cards
+- Light / dark mode toggle, saved in localStorage (follows the system setting until a choice is made)
 - Respects the reduced-motion setting
 
 ## Getting started
